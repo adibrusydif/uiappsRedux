@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { PENDING, FULFILLED, REJECTED } from 'redux-promise-middleware'
 import { 
-  FETCH_DATA
+  FETCH_DATA, REGISTER_USER
 } from '../actions/index'
 
 
@@ -20,10 +20,36 @@ export const data = (state = {
       return state
   }
 }
+export const user = (state = {
+  isFetching: false,
+  status: ''
+}, action) => {
+  switch (action.type) {
+    case `${REGISTER_USER}_PENDING`:
+      return {
+        ...state,
+        isFetching: true
+      }
+    case `${REGISTER_USER}_FULFILLED`: 
+      return {
+        ...state,
+        isFetching: false,
+        status: action.payload.status === 200 ? ('Success Register') : ('Register Failed')
+      }   
+    case `${REGISTER_USER}_REJECTED`:
+      return { 
+        ...state,
+        isFetching: false
+      }
 
+    default: 
+      return state
+  }
+}
 
 const rootReducer = combineReducers({
-  data
+  data,
+  user
 })
 
 export default rootReducer

@@ -3,11 +3,12 @@ import {
     View,
     Text,
     TextInput,
-    TouchableOpacity
+    TouchableOpacity,
+    ActivityIndicator
 } from 'react-native'
 import axios from 'axios'
 import { connect } from 'react-redux'
-import { REGISTER_USER } from '../actions'
+import { registerUser } from '../actions'
 // import { BASE_API_URL} from '../global/util'
 
 
@@ -19,43 +20,25 @@ class RegisterPage extends Component {
         messageError:''
     }
     registerClickHandler(){
-        this.props.dispatch(registerUser())
-        // this.setState ({ messageError :'', messageSuccess :''})
-    
-        // console.log(this.state.email , this.state.password)
-        // // const { email, password }= this.state //es6 Destrucruring
-        // if(this.state.email !== '' && this.state.password !== ''){
-        //     const dataPayloads = {
-        //     "email": this.state.email,
-        //     "password":this.state.password
-        //     } 
-        //     axios.post(BASE_API_URL + '/Users', dataPayloads)
-        //         .then(res=>{
-        //             console.log(res)
-        //             this.setState ({ messageSuccess : 'Success to Register'})
-        //             setTimeout(()=>this.props.navigation.navigate('Main'),3000)
-        //             // this.props.navigation.navigate('Main')
-
-        //         })
-        //         .catch(err=>{
-        //             console.log(err)
-                 
-        //             this.setState({
-        //                 messageError :"registation failed"
-                        
-                        
-        //             })
-                    
-                  
-        //         })
-        //     }        
+        const dataUser ={
+            email: this.state.email,
+            password:this.state.password
+        }
+        this.props.dispatch(registerUser(dataUser))     
     }
  
 
 
     render() {
+        const { isFetching, status } = this.props
         return(
             <View style={{ flex: 1}}>
+                {
+                    isFetching && (
+                        <ActivityIndicator size="large" color='blue' />
+                    )
+                }
+                <Text>{status}</Text>
                 <Text style={{marginLeft: 25, marginTop: 50 , fontSize: 25}}>Registration Form</Text>
                 {this.state.messageSuccess !=='' && 
                     <Text style={{ color:'green', marginLeft: 25, marginTop: 20}}>{this.state.messageSuccess}</Text>
@@ -90,4 +73,11 @@ class RegisterPage extends Component {
         )
     }
 }
-export default connect()(RegisterPage )
+const mapStateToProps = (state) => {
+    console.log(state)
+    return {
+        isFetching: state.user.isFetching,
+        status: state.user.status
+    }
+}
+export default connect(mapStateToProps)(RegisterPage)
